@@ -1,0 +1,9 @@
+# Build artifacts
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+*.tar

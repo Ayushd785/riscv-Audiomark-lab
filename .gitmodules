@@ -1,0 +1,3 @@
+[submodule "audiomark"]
+	path = audiomark
+	url = https://github.com/eembc/audiomark.git
