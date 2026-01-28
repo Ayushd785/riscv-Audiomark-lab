@@ -95,26 +95,24 @@ I created a multi-stage Dockerfile that:
 1. **Stage 1 (Builder):** Builds the RISC-V toolchain and QEMU 8.2 from source
 2. **Stage 2 (Final):** Contains only the compiled binaries (~1GB instead of 5GB)
 
-```mermaid
-flowchart TB
-    subgraph Stage1["Stage 1: Builder (~5GB)"]
-        A[Ubuntu 22.04] --> B[Install Build Deps]
-        B --> C[Clone riscv-gnu-toolchain]
-        C --> D[Build GCC + Binutils]
-        D --> E[Build QEMU 8.2]
-    end
-    
-    subgraph Stage2["Stage 2: Runtime (~1GB)"]
-        F[Ubuntu 22.04 Fresh] --> G[COPY /opt/riscv]
-        G --> H[COPY /opt/qemu]
-        H --> I[Ready to Use!]
-    end
-    
-    E -.->|"COPY artifacts"| G
-    
-    style Stage1 fill:#e9ecef
-    style Stage2 fill:#d4edda
-    style I fill:#51cf66,color:#fff
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    MULTI-STAGE DOCKER BUILD                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  STAGE 1: Builder (~5GB)              STAGE 2: Runtime (~1GB)   │
+│  ┌─────────────────────┐              ┌─────────────────────┐   │
+│  │ Ubuntu 22.04        │              │ Ubuntu 22.04 (fresh)│   │
+│  │   ↓                 │              │   ↓                 │   │
+│  │ Install build deps  │              │ COPY /opt/riscv ────┼───┤
+│  │   ↓                 │     COPY     │   ↓                 │   │
+│  │ Build GCC + QEMU ───┼──────────────┼─→ COPY /opt/qemu    │   │
+│  │   ↓                 │   artifacts  │   ↓                 │   │
+│  │ /opt/riscv (2GB)    │              │ Ready to use! ✓     │   │
+│  │ /opt/qemu (200MB)   │              └─────────────────────┘   │
+│  └─────────────────────┘                                        │
+│        (discarded)                         (final image)        │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ```dockerfile
@@ -208,28 +206,26 @@ for (; n > 0; n -= vl, x += vl, y += vl, z += vl) {
 
 The `vsetvl` instruction queries the hardware at runtime. Your code automatically adapts to any VLEN without recompilation!
 
-```mermaid
-flowchart TB
-    subgraph Loop["Strip-Mining Loop"]
-        A["n = total elements"] --> B{"n > 0?"}
-        B -->|Yes| C["vl = vsetvl(n)"]
-        C --> D["Process vl elements"]
-        D --> E["n -= vl"]
-        E --> F["ptr += vl"]
-        F --> B
-        B -->|No| G[Done!]
-    end
-    
-    subgraph Hardware["Hardware Adapts"]
-        H["VLEN=128: vl=4"]
-        I["VLEN=256: vl=8"]
-        J["VLEN=512: vl=16"]
-    end
-    
-    C -.-> Hardware
-    
-    style C fill:#74c0fc,color:#000
-    style G fill:#51cf66,color:#fff
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    STRIP-MINING PATTERN                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   n = 1000 elements                                             │
+│        │                                                        │
+│        ▼                                                        │
+│   ┌─────────┐     ┌─────────────────────────────────────────┐   │
+│   │ n > 0 ? │─YES─▶ vl = vsetvl(n)  ← "How many can I do?"  │   │
+│   └────┬────┘     │                                         │   │
+│        │          │  VLEN=128 → vl=4   (process 4 at once)  │   │
+│        NO         │  VLEN=256 → vl=8   (process 8 at once)  │   │
+│        │          │  VLEN=512 → vl=16  (process 16 at once) │   │
+│        ▼          └──────────────────┬──────────────────────┘   │
+│   ┌─────────┐                        │                          │
+│   │  DONE!  │◀───────────────────────┘                          │
+│   └─────────┘         Loop: process vl, n -= vl, repeat         │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 #### Cheat Code #2: LMUL (Register Grouping)
