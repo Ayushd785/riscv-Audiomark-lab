@@ -18,6 +18,31 @@ AudioMark is an industry-standard benchmark that measures audio processing perfo
 
 The catch? AudioMark was designed for **ARM processors with CMSIS-DSP**. RISC-V had no optimized port. Until now.
 
+### Project Overview
+
+```mermaid
+flowchart LR
+    subgraph Phase1["Phase 1: Foundation"]
+        A[Build Toolchain] --> B[Scalar Baseline]
+        B --> C[641 AudioMarks]
+    end
+    
+    subgraph Phase2["Phase 2: Optimization"]
+        D[Study VOLK Patterns] --> E[Implement RVV Kernels]
+        E --> F[Dockerize Everything]
+    end
+    
+    subgraph Phase3["Phase 3: Validation"]
+        G[QEMU Testing] --> H[Real Hardware]
+        H --> I[35,418 AudioMarks]
+    end
+    
+    Phase1 --> Phase2 --> Phase3
+    
+    style C fill:#ff6b6b,color:#fff
+    style I fill:#51cf66,color:#fff
+```
+
 ---
 
 ## Phase 1: The "Brain Without a Body" Problem
@@ -69,6 +94,28 @@ He was right. My setup was fragile. One wrong environment variable, one missing 
 I created a multi-stage Dockerfile that:
 1. **Stage 1 (Builder):** Builds the RISC-V toolchain and QEMU 8.2 from source
 2. **Stage 2 (Final):** Contains only the compiled binaries (~1GB instead of 5GB)
+
+```mermaid
+flowchart TB
+    subgraph Stage1["Stage 1: Builder (~5GB)"]
+        A[Ubuntu 22.04] --> B[Install Build Deps]
+        B --> C[Clone riscv-gnu-toolchain]
+        C --> D[Build GCC + Binutils]
+        D --> E[Build QEMU 8.2]
+    end
+    
+    subgraph Stage2["Stage 2: Runtime (~1GB)"]
+        F[Ubuntu 22.04 Fresh] --> G[COPY /opt/riscv]
+        G --> H[COPY /opt/qemu]
+        H --> I[Ready to Use!]
+    end
+    
+    E -.->|"COPY artifacts"| G
+    
+    style Stage1 fill:#e9ecef
+    style Stage2 fill:#d4edda
+    style I fill:#51cf66,color:#fff
+```
 
 ```dockerfile
 # STAGE 1: The Builder
@@ -160,6 +207,30 @@ for (; n > 0; n -= vl, x += vl, y += vl, z += vl) {
 ```
 
 The `vsetvl` instruction queries the hardware at runtime. Your code automatically adapts to any VLEN without recompilation!
+
+```mermaid
+flowchart TB
+    subgraph Loop["Strip-Mining Loop"]
+        A["n = total elements"] --> B{"n > 0?"}
+        B -->|Yes| C["vl = vsetvl(n)"]
+        C --> D["Process vl elements"]
+        D --> E["n -= vl"]
+        E --> F["ptr += vl"]
+        F --> B
+        B -->|No| G[Done!]
+    end
+    
+    subgraph Hardware["Hardware Adapts"]
+        H["VLEN=128: vl=4"]
+        I["VLEN=256: vl=8"]
+        J["VLEN=512: vl=16"]
+    end
+    
+    C -.-> Hardware
+    
+    style C fill:#74c0fc,color:#000
+    style G fill:#51cf66,color:#fff
+```
 
 #### Cheat Code #2: LMUL (Register Grouping)
 
