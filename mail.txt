@@ -1,0 +1,107 @@
+Subject: Request for Hardware Validation - AudioMark RVV Benchmark on Banana Pi F3
+
+Hi sanderjo,
+
+I'm Ayush Dwivedi, working on the LFX RISC-V Mentorship program under Edward Cheshire's 
+guidance. I've ported EEMBC's AudioMark benchmark to RISC-V with Vector (RVV 1.0) 
+optimizations specifically targeting the SpacemiT K3/X60 cores in your Banana Pi F3.
+
+Edward mentioned you have access to real SpacemiT hardware and kindly suggested I 
+reach out for hardware validation.
+
+================================================================================
+                              QUICK START (RECOMMENDED)
+================================================================================
+
+The binary is statically linked, so NO dependencies or toolchain needed.
+
+Step 1: Download the binary
+$ wget https://github.com/Ayushd785/riscv-Audiomark-lab/releases/download/v0.2-rvv-alpha/audiomark-rvv-static
+
+Step 2: Make it executable  
+$ chmod +x audiomark-rvv-static
+
+Step 3: Run the benchmark
+$ ./audiomark-rvv-static
+
+That's it! The benchmark should run for about 10-15 seconds.
+
+================================================================================
+                           EXPECTED OUTPUT
+================================================================================
+
+You should see something like:
+
+    Initializing
+    Memory alloc summary:
+     bmf = 14876
+     aec = 68100
+     anr = 45250
+     kws = 8264
+    Computing run speed
+    Measuring
+    Total runtime    : X.XXX seconds
+    Total iterations : XX iterations
+    Score            : XXXX.XX AudioMarks
+
+================================================================================
+                          MY QEMU RESULTS (FOR COMPARISON)
+================================================================================
+
+| Configuration  | Score           | Runtime   |
+|----------------|-----------------|-----------|
+| QEMU VLEN=128  | 1583 AudioMarks | 10.5s     |
+| QEMU VLEN=256  | 1728 AudioMarks | 10.8s     |
+
+Since your SpacemiT K3 has VLEN=128, we'd expect results comparable to my VLEN=128 
+QEMU baseline, but likely faster since it's real hardware vs emulation.
+
+================================================================================
+                    ALTERNATIVE: BUILD FROM SOURCE (Optional)
+================================================================================
+
+If you prefer to build it yourself for transparency or customization:
+
+Option A: Using Docker (any x86 machine)
+$ docker pull ayushd785/riscv-audio-lab
+$ docker run -it -v $(pwd):/work -w /work ayushd785/riscv-audio-lab bash
+# Inside container:
+$ cd audiomark && mkdir build && cd build
+$ cmake .. -DPORT_DIR=/work/ports_riscv -DCMAKE_TOOLCHAIN_FILE=/work/riscv_toolchain.cmake
+$ make -j4
+$ file audiomark  # Should show "statically linked"
+
+Option B: Native build on your Banana Pi F3
+(Requires RISC-V GCC with RVV support on the board)
+
+Full source code: https://github.com/Ayushd785/riscv-Audiomark-lab
+
+================================================================================
+                             WHAT I NEED FROM YOU
+================================================================================
+
+1. The benchmark **Score** (in AudioMarks)
+2. The **Total runtime** (in seconds)
+3. Any **errors or issues** encountered
+4. (Optional) Output of: $ cat /proc/cpuinfo | head -20
+
+================================================================================
+                              TECHNICAL DETAILS
+================================================================================
+
+- RVV Intrinsics: Using RVV 1.0 standard intrinsics
+- VLEN Independence: Code uses vsetvl for strip-mining, works on any VLEN
+- Optimized Functions: th_add_f32, th_dot_prod_f32, th_cmplx_mult_cmplx_f32, etc.
+- Compiler Flags: -march=rv64gcv -mabi=lp64d -static
+
+================================================================================
+
+Thank you so much for your help! This hardware validation will be invaluable for my 
+LFX submission and the broader RISC-V Vector ecosystem.
+
+Best regards,
+Ayush Dwivedi
+
+GitHub: https://github.com/Ayushd785
+Project: https://github.com/Ayushd785/riscv-Audiomark-lab
+Release: https://github.com/Ayushd785/riscv-Audiomark-lab/releases/tag/v0.2-rvv-alpha
