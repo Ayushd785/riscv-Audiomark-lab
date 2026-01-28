@@ -6,7 +6,7 @@
 
 ## The Beginning: A Challenge Wrapped in an Opportunity
 
-When I joined the **LFX RISC-V Mentorship Program** under Edward Cheshire, I had no idea I'd end up spending weeks wrestling with vector intrinsics, Docker containers, and QEMU emulation. But that's exactly what happened — and the results were beyond anything I expected.
+When I started exploring **RISC-V Vector extension (RVV)** optimization, I had no idea I'd end up spending weeks wrestling with vector intrinsics, Docker containers, and QEMU emulation. But that's exactly what happened — and the results were beyond anything I expected.
 
 The goal was deceptively simple: **Port EEMBC's AudioMark benchmark to RISC-V and optimize it using the Vector extension (RVV).**
 
@@ -60,7 +60,7 @@ Not impressive. But it was a baseline.
 
 ### The Problem with "Works on My Machine"
 
-Edward's feedback was clear: *"If someone like 'sanderjo' wants to run your code on their Banana Pi F3, they shouldn't spend 60 minutes building a toolchain."*
+Feedback from the RISC-V community was clear: *"If someone wants to run your code on their Banana Pi F3, they shouldn't spend 60 minutes building a toolchain."*
 
 He was right. My setup was fragile. One wrong environment variable, one missing library, and everything breaks. The solution? **Docker.**
 
@@ -503,14 +503,12 @@ QEMU is great for validation, but hardware is **22x faster**. Always test on rea
 
 ## Acknowledgments
 
-- **Edward Cheshire** — LFX Mentorship guidance
+- **Edward Cheshire** — Community guidance and support
 - **sanderjo** — Hardware testing on SpacemiT K1 and K3
 - **Olaf Bernstein** — The VOLK RVV implementation that taught me the patterns
 - **EEMBC** — For creating the AudioMark benchmark
 
 ---
-
-*This project was completed as part of the LFX RISC-V Mentorship Program.*
 
 *Written by Ayush Dwivedi | January 2026*
 
