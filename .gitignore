@@ -1,5 +1,6 @@
 # Build artifacts
 build/
+*.o
 
 # IDE
 .vscode/
@@ -7,3 +8,6 @@ build/
 
 # Docker
 *.tar
+
+# Binary files
+audiomark-static
