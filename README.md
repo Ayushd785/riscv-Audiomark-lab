@@ -1,4 +1,4 @@
-# 🚀 From Zero to 35,000 AudioMarks: My Journey Optimizing EEMBC AudioMark for RISC-V Vector Extension
+# From Zero to 35,000 AudioMarks: My Journey Optimizing EEMBC AudioMark for RISC-V Vector Extension
 
 > *A deep dive into porting a real-world audio processing benchmark to RISC-V with RVV 1.0 intrinsics — and achieving a 22x speedup on real hardware*
 
