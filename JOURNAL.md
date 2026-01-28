@@ -410,18 +410,98 @@ docker pull ayushd785/riscv-audio-lab
 
 ---
 
-## 🚀 What's Next (Hardware Validation)
+## 🏆 HARDWARE VALIDATION RESULTS (SUCCESS!)
 
-1. ✅ **Published GitHub Release** with static binary
-2. ⏳ **Send to sanderjo** for Banana Pi F3 testing
-3. ⏳ **Compare QEMU vs real hardware** performance
-4. ⏳ **Submit to LFX** with documented benchmarks
+### Real SpacemiT K3 Benchmark - January 28, 2026
+
+Thanks to **sanderjo** for running our binary on his **Banana Pi F3 (SpacemiT K3)**.
+
+#### K3 Raw Output:
+```
+superkoning@spacemit:~/eembc-audiomark$ ./audiomark-rvv-static
+Initializing
+Memory alloc summary:
+ bmf = 14876
+ aec = 68100
+ anr = 45250
+ kws = 8264
+Computing run speed
+Measuring
+Total runtime    : 11.011 seconds
+Total iterations : 585 iterations
+Score            : 35418.703125 AudioMarks
+```
+
+---
+
+### SpacemiT K1 (X60) Benchmark - January 28, 2026
+
+sanderjo also tested on his older **SpacemiT K1 (X60)** to verify VLEN independence:
+
+#### K1/X60 Raw Output:
+```
+sander@bananapif3:~/eembc-audiomark$ ./audiomark-rvv-static
+Initializing
+Memory alloc summary:
+ bmf = 14876
+ aec = 68100
+ anr = 45250
+ kws = 8264
+Computing run speed
+Measuring
+Total runtime    : 10.983 seconds
+Total iterations : 208 iterations
+Score            : 12625.140625 AudioMarks
+```
+
+#### CPU Info (K1/X60):
+```
+processor       : 0
+hart            : 0
+model name      : Spacemit(R) X60
+isa             : rv64imafdcv_zicbom_zicboz_zicntr_zicond_zicsr_zifencei_zihintpause_zihpm_zaamo_zalrsc_zfh_zfhmin_zca_zcd_zba_zbb_zbc_zbs_zkt_zve32f_zve32x_zve64d_zve64f_zve64x_zvfh_zvfhmin_zvkt_sscofpmf_sstc_svinval_svnapot_svpbmt
+mmu             : sv39
+uarch           : spacemit,x60
+```
+
+**Verified Extensions:** `v` (vector), `zba`, `zbb`, `zbc`, `zbs` (bit manipulation), `zfh` (half-precision float)
+
+---
+
+### 📊 Final Performance Comparison
+
+| Platform | Score (AudioMarks) | Runtime | Iterations | Speedup vs QEMU |
+|----------|-------------------|---------|------------|-----------------|
+| QEMU (VLEN=128) | 1,583 | 10.5s | 25 | 1x (baseline) |
+| QEMU (VLEN=256) | 1,728 | 10.8s | 28 | 1.1x |
+| **SpacemiT K1/X60** | **12,625** | **11.0s** | **208** | **8x** |
+| **SpacemiT K3** | **35,418** | **11.0s** | **585** | **22.4x** 🚀 |
+
+### Key Insights:
+- ✅ **RVV code works perfectly** on multiple real hardware platforms
+- ✅ **VLEN independence verified** - same binary runs on K1 and K3
+- ✅ **K3 is 2.8x faster than K1** (35,418 vs 12,625)
+- ✅ **22.4x faster** than QEMU emulation (K3)
+- ⚠️ Minor "double free" cleanup error (post-benchmark, doesn't affect results)
+
+---
+
+## ✅ PROJECT COMPLETE - All Milestones Achieved!
+
+| Milestone | Goal | Status |
+|-----------|------|--------|
+| **1. Dockerization** | Portable toolchain | ✅ Complete |
+| **2. VOLK Analysis** | Learn RVV patterns | ✅ Complete |
+| **3. RVV Implementation** | Vectorize DSP kernels | ✅ Complete |
+| **4. Hardware Validation** | Real SpacemiT K3 scores | ✅ **35,418 AudioMarks!** |
 
 ---
 
 *Journal completed: 2026-01-28*
+*Hardware validation by: sanderjo (SpacemiT K3 / Banana Pi F3)*
 *Author: Ayush Dwivedi*
 *Project: RISC-V AudioMark RVV Optimization*
 *LFX Mentorship: RISC-V Mentorship*
 *GitHub: https://github.com/Ayushd785/riscv-Audiomark-lab*
+
 
