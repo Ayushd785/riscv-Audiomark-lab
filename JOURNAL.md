@@ -380,12 +380,42 @@ Ready to send to sanderjo for Banana Pi F3 testing!
 
 ---
 
+## 📦 Distribution: Hybrid Approach
+
+### GitHub Release Published
+**Release:** [v0.2-rvv-alpha](https://github.com/Ayushd785/riscv-Audiomark-lab/releases/tag/v0.2-rvv-alpha)
+
+| Asset | Size | Description |
+|-------|------|-------------|
+| `audiomark-rvv-static` | 1020 KB | Statically linked binary |
+| Source code (zip) | - | Full source |
+| Source code (tar.gz) | - | Full source |
+
+### Direct Download Link
+```bash
+wget https://github.com/Ayushd785/riscv-Audiomark-lab/releases/download/v0.2-rvv-alpha/audiomark-rvv-static
+chmod +x audiomark-rvv-static
+./audiomark-rvv-static
+```
+
+### Docker Image
+```bash
+docker pull ayushd785/riscv-audio-lab
+```
+
+### Why Hybrid?
+- **Static Binary**: No dependencies, runs on any RISC-V Linux (avoids "dependency hell")
+- **Docker Image**: Full toolchain for rebuilding/modifying
+- **Source Code**: Transparency for security-conscious users
+
+---
+
 ## 🚀 What's Next (Hardware Validation)
 
-1. **Send static binary to sanderjo** for Banana Pi F3 testing
-2. **Compare QEMU vs real hardware** performance
-3. **Optimize further** based on hardware profiling results
-4. **Submit to LFX** with documented benchmarks
+1. ✅ **Published GitHub Release** with static binary
+2. ⏳ **Send to sanderjo** for Banana Pi F3 testing
+3. ⏳ **Compare QEMU vs real hardware** performance
+4. ⏳ **Submit to LFX** with documented benchmarks
 
 ---
 
@@ -393,3 +423,5 @@ Ready to send to sanderjo for Banana Pi F3 testing!
 *Author: Ayush Dwivedi*
 *Project: RISC-V AudioMark RVV Optimization*
 *LFX Mentorship: RISC-V Mentorship*
+*GitHub: https://github.com/Ayushd785/riscv-Audiomark-lab*
+
