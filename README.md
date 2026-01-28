@@ -570,7 +570,7 @@ QEMU is great for validation, but hardware is **22x faster**. Always test on rea
 
 ## Acknowledgments
 
-- **Edward Cheshire** — Community guidance and support
+- **Edward Vielmetti** — Community guidance and support
 - **sanderjo** — Hardware testing on SpacemiT K1 and K3
 - **Olaf Bernstein** — The VOLK RVV implementation that taught me the patterns
 - **EEMBC** — For creating the AudioMark benchmark
