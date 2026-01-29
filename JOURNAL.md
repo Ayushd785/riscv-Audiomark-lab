@@ -486,6 +486,84 @@ uarch           : spacemit,x60
 
 ---
 
+## 🐳 Quick Start: Running AudioMark in Docker
+
+### Option 1: Run Pre-built Static Binaries
+
+```bash
+# Start Docker container
+docker run -it --rm -v $(pwd):/work riscv-audio-lab bash
+
+# Run RVV Vector binary (no -L needed, statically linked)
+qemu-riscv64 -cpu rv64,v=true,vlen=256 /work/audiomark-rvv-static
+
+# Run Scalar binary
+qemu-riscv64 -cpu rv64,v=true,vlen=256 /work/audiomark-scalar-static-real
+```
+
+### Option 2: Build from Source (Vector - RVV)
+
+```bash
+# Start Docker container
+docker run -it --rm -v $(pwd):/work riscv-audio-lab bash
+
+# Build RVV-optimized version
+cd /work/audiomark
+rm -rf build && mkdir build && cd build
+
+cmake .. \
+    -DPORT_DIR=/work/audiomark/ports/riscv \
+    -DCMAKE_TOOLCHAIN_FILE=/work/riscv_toolchain.cmake
+
+make -j4 audiomark
+
+# Run with QEMU
+qemu-riscv64 -cpu rv64,v=true,vlen=256 -L /opt/riscv/sysroot ./audiomark
+# Expected: ~1720 AudioMarks
+```
+
+### Option 3: Build from Source (Scalar Baseline)
+
+```bash
+# Start Docker container
+docker run -it --rm -v $(pwd):/work riscv-audio-lab bash
+
+# Build scalar version (ARM port)
+cd /work/audiomark
+rm -rf build && mkdir build && cd build
+
+cmake .. \
+    -DPORT_DIR=/work/audiomark/ports/arm \
+    -DCMAKE_TOOLCHAIN_FILE=/work/riscv_toolchain.cmake
+
+make -j4 audiomark
+
+# Run with QEMU
+qemu-riscv64 -cpu rv64,v=true,vlen=256 -L /opt/riscv/sysroot ./audiomark
+# Expected: ~722 AudioMarks
+```
+
+### Option 4: Build Static Binary (for hardware testing)
+
+```bash
+# Add -static flag to create portable binary
+cmake .. \
+    -DPORT_DIR=/work/audiomark/ports/riscv \
+    -DCMAKE_TOOLCHAIN_FILE=/work/riscv_toolchain.cmake \
+    -DCMAKE_EXE_LINKER_FLAGS="-static"
+
+make -j4 audiomark
+
+# Verify it's statically linked
+file audiomark
+# Should show: "statically linked"
+
+# Copy to host
+cp audiomark /work/audiomark-rvv-static-new
+```
+
+---
+
 ## ✅ PROJECT COMPLETE - All Milestones Achieved!
 
 | Milestone | Goal | Status |
