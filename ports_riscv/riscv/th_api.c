@@ -8,6 +8,9 @@
 #include "ee_audiomark.h"
 #include "ee_nn.h"
 #include <math.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -215,10 +218,10 @@ void th_vlog_f32(ee_f32_t *p_a, ee_f32_t *p_c, uint32_t len) {
   for (uint32_t i = 0; i < len; i++)
     p_c[i] = logf(p_a[i]);
 }
-
 void th_cmplx_mag_f32(ee_f32_t *p_a, ee_f32_t *p_c, uint32_t len) {
   for (uint32_t i = 0; i < len; i++) {
-    float r = p_a[2 * i], im = p_a[2 * i + 1];
+    float r = p_a[2 * i];
+    float im = p_a[2 * i + 1];
     p_c[i] = sqrtf(r * r + im * im);
   }
 }
@@ -242,10 +245,13 @@ void th_cmplx_conj_f32(const ee_f32_t *p_a, ee_f32_t *p_c, uint32_t len) {
 
 void th_cmplx_dot_prod_f32(const ee_f32_t *p_a, const ee_f32_t *p_b,
                            uint32_t len, ee_f32_t *p_r, ee_f32_t *p_i) {
-  float sum_r = 0.0f, sum_i = 0.0f;
+  float sum_r = 0.0f;
+  float sum_i = 0.0f;
   for (uint32_t i = 0; i < len; i++) {
-    float ar = p_a[2 * i], ai = p_a[2 * i + 1], br = p_b[2 * i],
-          bi = p_b[2 * i + 1];
+    float ar = p_a[2 * i];
+    float ai = p_a[2 * i + 1];
+    float br = p_b[2 * i];
+    float bi = p_b[2 * i + 1];
     sum_r += ar * br + ai * bi;
     sum_i += ai * br - ar * bi;
   }
